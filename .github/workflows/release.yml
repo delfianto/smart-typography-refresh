@@ -1,0 +1,57 @@
+name: Release
+
+# Auto-release on push to main, gated by the manifest version: when
+# manifest.json carries a version that has no release yet, build and publish
+# it (creating the tag in the process). Pushes that don't bump the version
+# are no-ops, so releasing = bump manifest.json + versions.json and push.
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read manifest version
+        id: version
+        run: echo "version=$(jq -r .version manifest.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Check for existing release
+        id: existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "${{ steps.version.outputs.version }}" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release ${{ steps.version.outputs.version }} already exists; skipping."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: oven-sh/setup-bun@v2
+        if: steps.existing.outputs.exists == 'false'
+
+      - name: Install dependencies
+        if: steps.existing.outputs.exists == 'false'
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        if: steps.existing.outputs.exists == 'false'
+        run: bun run build
+
+      - name: Create GitHub release
+        if: steps.existing.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.version }}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "${{ steps.version.outputs.version }}" \
+            --generate-notes \
+            dist/main.js dist/manifest.json

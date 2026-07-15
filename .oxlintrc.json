@@ -1,0 +1,98 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "pedantic": "error",
+    "perf": "error",
+    "style": "error"
+  },
+  "rules": {
+    // ── Import hygiene ─────────────────────────────────────────
+    // Full strict form: declaration order (by syntax group, then first
+    // member) and member order within each declaration.
+    "sort-imports": ["error", { "ignoreCase": true }],
+    "import/first": "error",
+    "import/no-duplicates": "error",
+    "import/no-cycle": "error",
+    "import/no-self-import": "error",
+    // Inline `type` specifiers are this codebase's convention (one import
+    // line per module, types marked in place).
+    "import/consistent-type-specifier-style": ["error", "prefer-inline"],
+
+    // ── Deliberate deviations, each with a reason ──────────────
+    // Obsidian's API is null-based (getFileCache, editorInfoField, …) and
+    // CodeMirror uses `T | null` widely; banning null would fight both.
+    "unicorn/no-null": "off",
+    // Plain modules are kebab-case; the (rare) Obsidian-style class file may
+    // be PascalCase. Both are deliberate.
+    "unicorn/filename-case": ["error", { "cases": { "kebabCase": true, "pascalCase": true } }],
+    // Ternaries, early continue, and bare index/length literals are
+    // idiomatic in the replacement engine; banning them harms readability.
+    "no-ternary": "off",
+    "no-continue": "off",
+    "no-magic-numbers": "off",
+    // Single-line guards (`if (!value) return;`) match the surrounding style.
+    "curly": ["error", "multi-line"],
+    // CodeMirror's `iterChanges` callback is a fixed 5-arg positional shape.
+    "max-params": ["error", { "max": 5 }],
+    // The settings tab constructor narrows `plugin` to SmartTypographyPlugin;
+    // oxlint reads the super()+assignment as a useless constructor (it isn't).
+    "no-useless-constructor": "off",
+    // Short names are fine where scope is tiny (loop vars, lambda params).
+    "id-length": "off",
+    // The settings renderer and the transaction filter are naturally linear;
+    // size caps would force artificial splitting.
+    "max-lines": "off",
+    "max-lines-per-function": "off",
+    "max-statements": "off",
+    "max-depth": "off",
+    // Named exports everywhere except the plugin entry (Obsidian requires its
+    // default export). Exports live inline on each declaration; consolidating
+    // them would separate declarations from their public status.
+    "import/prefer-default-export": "off",
+    "import/no-named-export": "off",
+    "import/group-exports": "off",
+    "import/exports-last": "off",
+    // Object keys are grouped semantically (settings by topic; each input
+    // rule as trigger/from/to/contextMatch); alphabetizing destroys that.
+    "sort-keys": "off",
+    // Top-level function declarations + arrows for small local helpers.
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
+    // Lowercase inline comments (`// en dash`) are fine; sentence-casing every
+    // fragment is churn without meaning.
+    "capitalized-comments": "off"
+  },
+  "overrides": [
+    {
+      // Build/test tooling runs under Node — builtins are the point.
+      "files": ["*.config.mts", "*.config.ts", "*.config.js"],
+      "rules": {
+        "import/no-nodejs-modules": "off"
+      }
+    },
+    {
+      // Tests pass `undefined` deliberately (that's the case under test),
+      // and the obsidian mock is intentionally a pile of empty classes that
+      // mirror Obsidian's chainable, callback-based Setting API.
+      "files": ["test/**"],
+      "rules": {
+        "unicorn/no-useless-undefined": "off",
+        "typescript/no-extraneous-class": "off",
+        "max-classes-per-file": "off",
+        "no-useless-constructor": "off",
+        // The mock reproduces Obsidian's `addToggle(cb)` / `addText(cb)`
+        // callback API by design.
+        "promise/prefer-await-to-callbacks": "off",
+        // Assertions are annotated inline (`// -- → en dash`) for at-a-glance
+        // reading of the expected glyph.
+        "no-inline-comments": "off",
+        // Threading `state = tr.update(...).state` and indexing rule arrays
+        // (`fractionRules[0]`) reads clearer than forced destructuring here.
+        "prefer-destructuring": "off"
+      }
+    }
+  ],
+  "ignorePatterns": ["dist", "coverage", "node_modules", "test-vault", "*.md"]
+}
