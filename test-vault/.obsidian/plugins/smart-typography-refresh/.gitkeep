@@ -1,0 +1,2 @@
+# Watch-mode (`bun run dev`) deploys main.js + manifest.json here.
+# Those build artifacts are gitignored; this file keeps the folder tracked.

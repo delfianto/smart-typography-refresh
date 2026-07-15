@@ -1,0 +1,42 @@
+{
+  "name": "smart-typography-refresh",
+  "version": "2.1.0",
+  "description": "Obsidian plugin that converts straight quotes to curly quotes, dashes to en/em dashes, periods to ellipses, plus arrows, guillemets, comparisons and fractions. Fork by delfianto — modernized stack (Vite+, Bun, Vitest).",
+  "keywords": [
+    "obsidian",
+    "obsidian-plugin",
+    "smart-quotes",
+    "typography"
+  ],
+  "license": "GPL-3.0-only",
+  "author": "Dwi Elfianto",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "dev": "vp build --watch",
+    "build": "vp build",
+    "check": "vp fmt --check -c .oxfmtrc.json && vp lint -c .oxlintrc.json",
+    "lint": "vp lint -c .oxlintrc.json",
+    "lint:fix": "vp lint -c .oxlintrc.json --fix",
+    "format": "vp fmt --write -c .oxfmtrc.json",
+    "type-check": "bun x tsc --noEmit",
+    "test": "vp test run",
+    "test:coverage": "vp test run --coverage"
+  },
+  "devDependencies": {
+    "@codemirror/language": "^6",
+    "@codemirror/state": "^6",
+    "@lezer/common": "^1",
+    "@types/node": "^26.1.1",
+    "@voidzero-dev/vite-plus-core": "^0.2.4",
+    "builtin-modules": "^5.3.0",
+    "obsidian": "^1.13.1",
+    "tslib": "^2.8.1",
+    "typescript": "^6.0.3",
+    "vite-plus": "^0.2.4",
+    "vitest": "4.1.10"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@^0.2.4"
+  }
+}
