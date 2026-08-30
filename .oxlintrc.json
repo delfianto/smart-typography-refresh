@@ -33,6 +33,8 @@
     "no-ternary": "off",
     "no-continue": "off",
     "no-magic-numbers": "off",
+    // Separate declarations are easier to scan and produce smaller diffs.
+    "one-var": "off",
     // Single-line guards (`if (!value) return;`) match the surrounding style.
     "curly": ["error", "multi-line"],
     // CodeMirror's `iterChanges` callback is a fixed 5-arg positional shape.
