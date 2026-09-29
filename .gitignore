@@ -29,3 +29,4 @@ test-vault/.obsidian/plugins/smart-typography-refresh/manifest.json
 test-vault/.obsidian/plugins/smart-typography-refresh/*.js.map
 test-vault/.obsidian/workspace.json
 test-vault/.obsidian/workspace
+.vitest/
