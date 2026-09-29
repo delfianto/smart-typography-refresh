@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { buildInputRules } from "../src/input-rules";
 import { createTypographyExtension } from "../src/editor-extension";
 import { EditorState } from "@codemirror/state";
@@ -189,28 +189,28 @@ describe("regressions", () => {
   });
 });
 
-describe("ignored editors", () => {
-  const typeDash = (isIgnored: () => boolean) => {
-    const { inputRuleMap } = buildInputRules(SETTINGS);
-    const extension = createTypographyExtension(
-      () => inputRuleMap,
-      () => SETTINGS,
-      isIgnored,
-    );
-    const state = EditorState.create({
-      doc: "-",
-      selection: { anchor: 1 },
-      extensions: [extension],
-    });
-    return state
-      .update({
-        changes: { from: 1, insert: "-" },
-        selection: { anchor: 2 },
-        userEvent: "input.type",
-      })
-      .state.doc.toString();
-  };
+const typeDash = (isIgnored: () => boolean) => {
+  const { inputRuleMap } = buildInputRules(SETTINGS);
+  const extension = createTypographyExtension(
+    () => inputRuleMap,
+    () => SETTINGS,
+    isIgnored,
+  );
+  const state = EditorState.create({
+    doc: "-",
+    selection: { anchor: 1 },
+    extensions: [extension],
+  });
+  return state
+    .update({
+      changes: { from: 1, insert: "-" },
+      selection: { anchor: 2 },
+      userEvent: "input.type",
+    })
+    .state.doc.toString();
+};
 
+describe("ignored editors", () => {
   it("performs no replacement when the editor is ignored", () => {
     expect(typeDash(() => true)).toBe("--");
   });

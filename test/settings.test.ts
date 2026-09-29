@@ -3,7 +3,7 @@ import {
   type SmartTypographyPlugin,
   SmartTypographySettingTab,
 } from "../src/settings";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { type App } from "obsidian";
 
 describe("DEFAULT_SETTINGS", () => {

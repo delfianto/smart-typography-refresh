@@ -1,5 +1,5 @@
 import { copyFileSync, existsSync, mkdirSync } from "node:fs";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, type Plugin } from "vite-plus";
 import builtins from "builtin-modules";
 import path from "node:path";
 
@@ -43,6 +43,13 @@ function copyManifest(): Plugin {
 }
 
 export default defineConfig({
+  test: {
+    // Vitest v4 compatibility: preserve mock call history.
+    // Remove after tests no longer rely on calls from setup or earlier tests.
+    // https://viteplus.dev/guide/vitest-v5#remove-unneeded-compatibility-settings
+    // https://vitest.dev/guide/migration/#clearmocks-is-enabled-by-default
+    clearMocks: false,
+  },
   plugins: [copyManifest()],
 
   build: {

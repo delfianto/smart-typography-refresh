@@ -9,7 +9,7 @@ import {
   guillemetRules,
   smartQuoteRules,
 } from "../src/input-rules";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { type InputRule, type SmartTypographySettings } from "../src/types";
 
 const ALL_ENABLED: SmartTypographySettings = {
@@ -118,6 +118,9 @@ describe("rule data — contextMatch", () => {
   });
 });
 
+const only = (flag: keyof SmartTypographySettings, rules: InputRule[]) =>
+  expect(buildInputRules({ ...NONE_ENABLED, [flag]: true }).inputRules).toEqual(rules);
+
 describe("buildInputRules", () => {
   it("includes every category when all flags are on", () => {
     const { inputRules } = buildInputRules(ALL_ENABLED);
@@ -132,9 +135,6 @@ describe("buildInputRules", () => {
   });
 
   it("maps each category to exactly its rules", () => {
-    const only = (flag: keyof SmartTypographySettings, rules: InputRule[]) =>
-      expect(buildInputRules({ ...NONE_ENABLED, [flag]: true }).inputRules).toEqual(rules);
-
     only("ellipsis", ellipsisRules);
     only("curlyQuotes", smartQuoteRules);
     only("arrows", arrowRules);
